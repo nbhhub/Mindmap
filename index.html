@@ -178,7 +178,7 @@
         /* Syntax Highlighter Layout */
         .code-container {
             position: relative;
-            height: 350px; /* Tăng chiều cao giống IDE hơn */
+            height: 350px;
             background: #1e1e1e;
             overflow: hidden;
             display: flex;
@@ -191,16 +191,18 @@
             color: #6e7681;
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
-            line-height: 24px; /* Sửa lỗi lệch: Ép cứng pixel để tránh làm tròn số thập phân */
+            line-height: 24px;
             text-align: right;
             user-select: none;
             border-right: 1px solid #333;
             min-width: 45px;
             overflow: hidden;
+            white-space: pre;
         }
         .code-editor-area {
             position: relative;
             flex-grow: 1;
+            height: 100%;
             overflow: hidden;
         }
         .code-textarea, .code-highlight {
@@ -209,22 +211,17 @@
             width: 100%; height: 100%;
             padding: 15px 20px;
             margin: 0; 
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 24px; /* Ép cứng pixel để 2 lớp textarea và pre khớp 100% */
-            white-space: pre;
-            overflow-wrap: normal;
-            word-wrap: normal;
-            overflow-x: auto;
-            overflow-y: auto;
-            border: none;
+            border: 0;
+            font-family: 'Consolas', 'Courier New', monospace !important;
+            font-size: 14px !important;
+            line-height: 24px !important;
+            white-space: pre !important;
+            word-wrap: normal !important;
             tab-size: 4;
             box-sizing: border-box;
-            /* Chống lệch font rendering trên một số trình duyệt */
-            -webkit-text-size-adjust: none;
-            text-rendering: auto;
             letter-spacing: normal;
             word-spacing: normal;
+            -webkit-text-size-adjust: none;
         }
         .code-textarea {
             color: transparent;
@@ -233,22 +230,24 @@
             z-index: 2;
             outline: none;
             resize: none;
+            overflow: auto;
         }
-        /* TRICK TỐI THƯỢNG: Ẩn luôn chữ của textarea khi bôi đen để không đè bóng đen lên highlight */
         .code-textarea::selection {
             color: transparent;
-            background: rgba(86, 156, 214, 0.3); /* Chỉ hiện màu nền xanh bôi đen kiểu IDE */
+            background: rgba(86, 156, 214, 0.35);
         }
         .code-highlight {
             color: #d4d4d4;
+            background: transparent;
             z-index: 1;
             pointer-events: none;
-            overflow: hidden; /* Ẩn scrollbar lớp dưới để đồng bộ mượt với JS */
+            overflow: hidden;
         }
         .code-highlight code {
-            font-family: inherit;
-            font-size: inherit;
-            line-height: inherit;
+            font-family: inherit !important;
+            font-size: inherit !important;
+            line-height: inherit !important;
+            display: block;
         }
         /* Scrollbar styling cho IDE */
         .code-textarea::-webkit-scrollbar { width: 14px; height: 14px; }
@@ -257,22 +256,53 @@
         .code-textarea::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
 
         /* Mã màu Syntax */
-        .sy-dash { color: #569cd6; font-weight: bold; }
-        .sy-theme { color: #c586c0; }
-        .sy-html { color: #4ec9b0; }
-        .sy-text { color: #ce9178; }
+        .sy-dash { color: #569cd6; font-weight: normal; }
+        .sy-theme { color: #c586c0; font-weight: normal; }
+        .sy-html { color: #4ec9b0; font-weight: normal; }
+        .sy-text { color: #ce9178; font-weight: normal; }
 
-        /* Container của cây Mindmap */
-        .mindmap-tree { display: flex; align-items: flex-start; min-width: max-content; padding-bottom: 50px; margin-top: 10px; }
+        /* Khung Viewport Canvas tương tác (Zoom & Pan) */
+        .mindmap-viewport {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 120px);
+            min-height: 650px;
+            overflow: hidden;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+            background-size: 26px 26px;
+            border: 2px dashed #e2e8f0;
+            border-radius: 20px;
+            cursor: grab;
+            user-select: none;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .mindmap-viewport:active {
+            cursor: grabbing;
+        }
+
+        /* Container của cây Mindmap với hỗ trợ Transform */
+        .mindmap-tree {
+            display: inline-flex;
+            align-items: flex-start;
+            min-width: max-content;
+            transform-origin: 0 0;
+            will-change: transform;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 40px;
+        }
 
         @media print { .editor-wrapper { display: none !important; } }
 
         /* Node Gốc (Root) */
         .root-node {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #ffffff;
-            padding: 24px 28px;
-            border-radius: 18px;
+            padding: 24px 30px;
+            border-radius: 20px;
             font-size: 18px;
             font-weight: 800;
             letter-spacing: 0.5px;
@@ -280,11 +310,12 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.3), 0 0 20px rgba(56, 189, 248, 0.25);
             position: relative;
             margin-right: 60px;
             align-self: center;
             flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.15);
         }
 
         .root-node::after {
@@ -294,7 +325,7 @@
             top: 50%;
             width: 60px;
             height: 2px;
-            background-color: var(--line-color);
+            background: linear-gradient(to right, #0f172a, var(--line-color));
         }
 
         /* Danh sách nhánh */
@@ -315,6 +346,7 @@
             bottom: 24px;
             width: 2px;
             background-color: var(--line-color);
+            transition: all 0.3s ease;
         }
 
         li.tree-item {
@@ -338,21 +370,21 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 20px;
-            border-radius: 12px;
+            padding: 12px 22px;
+            border-radius: 14px;
             color: #fff;
             font-size: 14.5px;
             font-weight: 700;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             min-width: 220px;
         }
 
         .card-l1:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.18), 0 0 20px currentColor;
         }
 
         .card-l1 .svg-icon {
@@ -360,26 +392,33 @@
             height: 20px;
         }
 
-        .theme-time .card-l1 { background: var(--time-color); }
-        .theme-place .card-l1 { background: var(--place-color); }
-        .theme-agent .card-l1 { background: var(--agent-color); }
-        .theme-reason .card-l1 { background: var(--reason-color); }
-        .theme-move .card-l1 { background: var(--move-color); }
+        .theme-time .card-l1 { background: var(--time-color); color: var(--time-color); }
+        .theme-place .card-l1 { background: var(--place-color); color: var(--place-color); }
+        .theme-agent .card-l1 { background: var(--agent-color); color: var(--agent-color); }
+        .theme-reason .card-l1 { background: var(--reason-color); color: var(--reason-color); }
+        .theme-move .card-l1 { background: var(--move-color); color: var(--move-color); }
+        .card-l1 span { color: #ffffff !important; }
 
         /* --- TẦNG 2: GIỚI TỪ (Preposition Pill) --- */
         .card-l2 {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 30px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             background: #ffffff;
             border: 2px solid;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             white-space: nowrap;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-l2:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 16px currentColor;
         }
 
         .theme-time .card-l2 { border-color: var(--time-color); color: var(--time-color); }
@@ -392,14 +431,22 @@
         .card-l3 {
             display: inline-flex;
             align-items: center;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 6px 14px;
+            border-radius: 10px;
             font-size: 12.5px;
             font-weight: 600;
-            background: #f1f5f9;
+            background: #ffffff;
             color: #334155;
             border: 1px solid #cbd5e1;
             white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+        }
+
+        .card-l3:hover {
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         /* --- TẦNG 4: CÂU VÍ DỤ (Example Leaf Node) --- */
@@ -412,6 +459,13 @@
             color: #475569;
             box-shadow: 0 2px 6px rgba(0,0,0,0.02);
             white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .card-l4:hover {
+            border-color: #64748b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.07);
         }
 
         .card-l4 b {
@@ -430,6 +484,7 @@
             border-radius: 50%;
             font-size: 11px;
             margin-left: 6px;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .card-l2 .toggle-btn {
@@ -452,10 +507,60 @@
             content: '−';
         }
 
+        /* ================= HIỆU ỨNG PHÁT SÁNG & BUNG NỞ NGẦU LÒI ================= */
+        @keyframes neonPopBloom {
+            0% {
+                opacity: 0;
+                transform: translateX(-35px) scale(0.85);
+                filter: drop-shadow(0 0 22px #38bdf8) brightness(1.7);
+            }
+            65% {
+                transform: translateX(4px) scale(1.03);
+                filter: drop-shadow(0 0 10px #818cf8) brightness(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+                filter: drop-shadow(0 0 0 transparent) brightness(1);
+            }
+        }
+
+        /* Hiệu ứng lan tỏa theo tầng khi bung mở */
+        :not(.collapsed) > ul.tree-branch > li.tree-item {
+            animation: neonPopBloom 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(1) { animation-delay: 0.02s; }
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(2) { animation-delay: 0.06s; }
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(3) { animation-delay: 0.10s; }
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(4) { animation-delay: 0.14s; }
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(5) { animation-delay: 0.18s; }
+        :not(.collapsed) > ul.tree-branch > li.tree-item:nth-child(n+6) { animation-delay: 0.22s; }
+
+        /* Badge hiển thị % zoom */
+        .zoom-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0 4px;
+            min-width: 42px;
+            text-align: center;
+        }
+
         /* In ấn */
         @media print {
             .toolbar { display: none; }
             body { padding: 0; background: #fff; }
+            .mindmap-viewport {
+                overflow: visible !important;
+                height: auto !important;
+                border: none !important;
+                background: none !important;
+            }
+            .mindmap-tree {
+                transform: none !important;
+                position: static !important;
+            }
         }
     </style>
 </head>
@@ -494,7 +599,7 @@
         <div class="editor-body">
             <!-- Tài liệu API -->
             <details class="api-docs">
-                <summary>Hướng dẫn cú pháp tạo Mindmap Skibidi</summary>
+                <summary>Click here to know how to cú pháp tạo Mindmap Skibidi</summary>
                 <ul>
                     <li>Dùng dấu trừ <code>-</code> để xác định cấp bậc nhánh. Cấp 1: <code>- Nhánh</code>, Cấp 2: <code>-- Nhánh</code>, v.v.</li>
                     <li>Gắn màu cho Nhánh Cấp 1 bằng dấu gạch đứng: <code>- Tên nhánh | theme-time</code></li>
@@ -522,11 +627,24 @@
         </button>
         <button onclick="collapseToL2()">
             <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            Hiện đến Tầng 2
+            Hiện Tầng 2
         </button>
         <button onclick="collapseToL1()">
             <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
             Hiện Tầng 1
+        </button>
+        <button onclick="zoomIn()" title="Phóng to">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            Phóng to
+        </button>
+        <button onclick="zoomOut()" title="Thu nhỏ">
+            <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            Thu nhỏ
+        </button>
+        <span class="zoom-badge" id="zoomBadge">100%</span>
+        <button onclick="resetView()" title="Về vị trí gốc">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+            Gốc
         </button>
         <button onclick="window.print()">
             <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -534,8 +652,10 @@
         </button>
     </div>
 
-    <!-- CÂY MINDMAP CONTAINER -->
-    <div id="mindmap-container" class="mindmap-tree"></div>
+    <!-- KHUNG CANVAS BỌC MINDMAP (KÉO & ZOOM) -->
+    <div class="mindmap-viewport" id="mindmapViewport">
+        <div id="mindmap-container" class="mindmap-tree"></div>
+    </div>
 
     <!-- SCRIPT ENGINE MINDMAP & FILE SKIBIDI -->
     <script>
@@ -564,6 +684,8 @@
             document.getElementById('skibidiInput').value = defaultData;
             updateHighlight();
             generateMindmap();
+            initPanZoom();
+            resetView();
         };
 
         // --- IDE CHỨC NĂNG: SYNTAX HIGHLIGHT & GIAO DIỆN ---
@@ -577,25 +699,26 @@
         }
 
         function updateHighlight() {
-            const text = document.getElementById('skibidiInput').value;
+            const textarea = document.getElementById('skibidiInput');
+            const text = textarea.value;
+            
             let highlightedText = text
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
 
-            // Regex xử lý tô màu (Đảm bảo an toàn XSS do đã replace thẻ html)
+            // Regex xử lý tô màu
             highlightedText = highlightedText
-                // Tô màu dấu trừ
                 .replace(/^(\s*-+)/gm, '<span class="sy-dash">$1</span>')
-                // Tô màu theme
                 .replace(/(\| \s*theme-[a-z]+)/gm, '<span class="sy-theme">$1</span>')
-                // Tô màu thẻ b, i, u giả định (nếu user gõ thẻ html)
-                .replace(/(&lt;\/?(?:b|i|u)&gt;)/g, '<span class="sy-html">$1</span>')
-                // Tô màu text thường
-                .replace(/([^<>]+)(?=(<|$))/g, '<span class="sy-text">$1</span>');
+                .replace(/(&lt;\/?(?:b|i|u)&gt;)/g, '<span class="sy-html">$1</span>');
 
-            // Thêm \n vào cuối để luôn khớp form dòng trống của textarea
-            document.getElementById('highlightLayer').innerHTML = highlightedText + '\n';
+            // Chỉ thêm khoảng trắng khi ký tự cuối cùng thực sự là Enter
+            if (text[text.length - 1] === '\n' || text.length === 0) {
+                highlightedText += ' ';
+            }
+
+            document.getElementById('highlightLayer').innerHTML = highlightedText;
 
             // Render cột số dòng (Line Numbers)
             const linesCount = text.split('\n').length;
@@ -604,6 +727,9 @@
                 numbersHtml += i + '<br>';
             }
             document.getElementById('lineNumbers').innerHTML = numbersHtml;
+
+            // Đồng bộ toạ độ cuộn ngay khi nhập liệu
+            syncScroll();
         }
 
         function syncScroll() {
@@ -652,9 +778,9 @@
                     let parts = line.split('|');
                     line = parts[0].trim();
                     extraClass = parts[1] ? parts[1].trim() : 'theme-time';
-                    html += `<li class="tree-item ${extraClass}"><div class="card-l1" onclick="toggleNode(this)"><span>${line}</span><span class="toggle-btn"></span></div><ul class="tree-branch">`;
+                    html += `<li class="tree-item ${extraClass}"><div class="card-l1" onclick="toggleNode(this, event)"><span>${line}</span><span class="toggle-btn"></span></div><ul class="tree-branch">`;
                 } else if (level === 2) {
-                    html += `<li class="tree-item"><div class="card-l2" onclick="toggleNode(this)">${line} <span class="toggle-btn"></span></div><ul class="tree-branch">`;
+                    html += `<li class="tree-item"><div class="card-l2" onclick="toggleNode(this, event)">${line} <span class="toggle-btn"></span></div><ul class="tree-branch">`;
                 } else if (level === 3) {
                     html += `<li class="tree-item"><div class="card-l3">${line}</div><ul class="tree-branch">`;
                 } else if (level >= 4) {
@@ -711,8 +837,96 @@
             event.target.value = ''; // Reset input
         }
 
-        // --- CÁC HÀM TƯƠNG TÁC UI CŨ ---
-        function toggleNode(element) {
+        // --- ENGINE ZOOM VÀ KÉO THẢ (PAN & ZOOM) ---
+        let zoomLevel = 1;
+        let panX = 60;
+        let panY = 120;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let hasMoved = false;
+
+        function applyTransform() {
+            const container = document.getElementById('mindmap-container');
+            if (container) {
+                container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+            }
+            const badge = document.getElementById('zoomBadge');
+            if (badge) {
+                badge.textContent = `${Math.round(zoomLevel * 100)}%`;
+            }
+        }
+
+        function initPanZoom() {
+            const viewport = document.getElementById('mindmapViewport');
+            if (!viewport) return;
+
+            // Zoom bằng con lăn chuột (tập trung theo vị trí con trỏ)
+            viewport.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 1.12 : 0.88;
+                const newZoom = Math.min(Math.max(zoomLevel * zoomFactor, 0.2), 3);
+                
+                const rect = viewport.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                panX = mouseX - (mouseX - panX) * (newZoom / zoomLevel);
+                panY = mouseY - (mouseY - panY) * (newZoom / zoomLevel);
+                zoomLevel = newZoom;
+                applyTransform();
+            }, { passive: false });
+
+            // Bắt đầu kéo chuột
+            viewport.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDragging = true;
+                hasMoved = false;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+            });
+
+            // Di chuyển canvas
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const curX = e.clientX - startX;
+                const curY = e.clientY - startY;
+                if (Math.abs(curX - panX) > 5 || Math.abs(curY - panY) > 5) {
+                    hasMoved = true;
+                }
+                panX = curX;
+                panY = curY;
+                applyTransform();
+            });
+
+            // Nhả chuột
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        }
+
+        function zoomIn() {
+            zoomLevel = Math.min(zoomLevel * 1.2, 3);
+            applyTransform();
+        }
+
+        function zoomOut() {
+            zoomLevel = Math.max(zoomLevel * 0.8, 0.2);
+            applyTransform();
+        }
+
+        function resetView() {
+            zoomLevel = 1;
+            panX = 60;
+            panY = 120;
+            applyTransform();
+        }
+
+        // --- CÁC HÀM TƯƠNG TÁC UI ---
+        function toggleNode(element, event) {
+            // Nếu người dùng đang giữ chuột kéo di chuyển canvas thì không đóng/mở nhánh
+            if (hasMoved) return;
+            if (event) event.stopPropagation();
             const li = element.parentElement;
             li.classList.toggle('collapsed');
         }
