@@ -754,40 +754,40 @@
             <div class="ai-modal-header">
                 <h3>
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                    Tạo Mindmap bằng Google AI Studio (Gemini)
+                    Fash Generate
                 </h3>
                 <button class="ai-modal-close" onclick="closeAiModal()">&times;</button>
             </div>
             <div class="ai-modal-body">
                 <div class="ai-form-group">
-                    <label for="geminiApiKey">Google AI Studio API Key (tự lưu vào trình duyệt):</label>
+                    <label for="geminiApiKey">Pw</label>
                     <input type="password" id="geminiApiKey" placeholder="Dán API Key (AIzaSy...) tại đây">
                 </div>
                 <div class="ai-form-group">
-                    <label for="geminiModelSelect">Mô hình:</label>
+                    <label for="geminiModelSelect">Model:</label>
                     <select id="geminiModelSelect" style="background: #2d2d2d; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; outline: none; cursor: pointer;">
-                        <option value="gemini-2.5-flash" selected>Gemini 3.8 Flash</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                        <option value="gemini-2.5-flash" selected>3.8F</option>
+                        <option value="gemini-2.0-flash">2.0F</option>
+                        <option value="gemini-2.5-flash-lite">2.5F</option>
                     </select>
                 </div>
                 <div class="ai-form-group">
-                    <label for="aiPromptInput">Nội dung hoặc Chủ đề cần tạo sơ đồ:</label>
+                    <label for="aiPromptInput">Input</label>
                     <textarea id="aiPromptInput" rows="4" placeholder="Nhập chủ đề HOẶC dán trực tiếp một đoạn văn bản/bài học/tài liệu thô vào đây (AI sẽ tự động đọc hiểu và đúc kết thành Mindmap)..."></textarea>
                 </div>
 
                 <div class="ai-form-group" id="aiPreviewGroup" style="display: none;">
-                    <label>Xem trước kết quả do AI tạo:</label>
+                    <label>Preview</label>
                     <div id="aiPreviewBox" class="ai-preview-box"></div>
                 </div>
             </div>
             <div class="ai-modal-footer">
                 <button class="editor-btn secondary" onclick="closeAiModal()">Hủy</button>
                 <button class="editor-btn ai-btn" id="btnRunAi" onclick="generateMindmapWithAI()">
-                    <svg class="svg-icon" id="aiIconBtn" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Tạo bằng AI
+                    <svg class="svg-icon" id="aiIconBtn" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Generate
                 </button>
                 <button class="editor-btn" id="btnApplyAi" style="background: #10b981; display: none;" onclick="applyAiResult()">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Xác nhận & Thay thế vào Editor
+                    <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Replace all
                 </button>
             </div>
         </div>
